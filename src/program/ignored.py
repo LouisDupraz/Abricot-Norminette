@@ -14,10 +14,5 @@ def getIgnoredFiles():
             abricot_ignored = f.readlines()
     except:
         abricot_ignored = []
-    try:
-        with open(".plumignore", "r") as f:
-            plum_ignored = f.readlines()
-    except:
-        plum_ignored = []
-    ignored = git_ignored + abricot_ignored + plum_ignored
+    ignored = git_ignored + abricot_ignored
     return [x[2:].replace("\n", "") if x.startswith("./") else x.replace("\n", "") for x in ignored]
