@@ -37,8 +37,19 @@ if args.version:
     from __init__ import showVersion
     showVersion()
 
+try:
+    os.system("find tests/ -type f -print > .abricotbaseignore 2> /dev/null")
+    os.system("find bonus/ -type f -print >> .abricotbaseignore 2> /dev/null")
+    with open(".abricotbaseignore", "r") as f:
+        basic_ignored = f.readlines()
+    os.system("rm .abricotbaseignore")
+except:
+    basic_ignored = []
+
+config.ignored = [x[2:].replace("\n", "") if x.startswith("./") else x.replace("\n", "") for x in basic_ignored]
+
 if args.ignore:
-    config.ignored = getIgnoredFiles()
+    config.ignored += getIgnoredFiles()
 
 prepareGetSourceFileNames(config)
 

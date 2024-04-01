@@ -1,6 +1,7 @@
 import os
 import re
 
+
 def abricotize(filename: str) -> None:
     filecontent = None
     try:
@@ -13,7 +14,8 @@ def abricotize(filename: str) -> None:
     if filecontent is None:
         print("File is empty")
         exit(1)
-    
+
+    filecontent = filecontent.replace('if __name__ == "__main__":\n    ', '')
     functions_calls = [f for f in filecontent.splitlines() if re.match(r'^\w+\(\)$', f)]
     filecontent = filecontent.replace("import vera", "import abricot")
     res = ""
@@ -26,8 +28,12 @@ def abricotize(filename: str) -> None:
     filecontent = res
     filecontent = filecontent.replace("vera.getSourceFileNames()", "abricot.getSourceFileNames()")
     filecontent = filecontent.replace("vera.", "abricot.")
-    filecontent = re.sub(r'(INFO|MINOR|MAJOR)\:C\-', "", filecontent)
+    filecontent = re.sub(r'(INFO|MINOR|MAJOR|FATAL)\:C\-', "", filecontent)
 
+    if filename.endswith("C-L6.py"):
+        filecontent = filecontent.replace("list[abricot.Token]", "abricot.TokenSequence")
+    if filename.endswith("C-G2.py"):
+        filecontent = filecontent.replace("current_function.prototype.line_start - 1,", "current_function.prototype.line_start,")
     if filename.endswith("C-G3.py"):
         filecontent = filecontent.replace("if not is_source_file(file) and not is_header_file(file):", "if not is_header_file(file):")
 
@@ -35,18 +41,20 @@ def abricotize(filename: str) -> None:
     with open("%s/../src/rules/%s" % (cwd, filename.replace("-", "_")), 'w') as f:
         f.write(filecontent)
 
+
 def get_banana_rules():
     os.system("rm -rf /tmp/fruitmixer")
     os.system("mkdir /tmp/fruitmixer")
     os.system("mkdir /tmp/fruitmixer/sources")
-    os.system("git clone git@github.com:Epitech/banana-coding-style-checker.git /tmp/fruitmixer/remote")
-    os.system("cp /tmp/fruitmixer/remote/vera/rules/*.py /tmp/fruitmixer/sources")
-    os.system("rm -rf /tmp/fruitmixer/remote")
+    os.system("cp -r /tmp/docker-volume/vera++/rules/*.py /tmp/fruitmixer/sources")
 
-def add_additional_rules():
+
+def add_additional_rule():
     cwd = os.path.dirname(__file__)
-    os.system("cp %s/../src/additional/*.py %s/../src/rules/" % (cwd, cwd))
-    
+    os.system("cp %s/../src/additional/C_FN.py %s/../src/rules/" % (cwd, cwd))
+    os.system("cp %s/../src/additional/__init__.py %s/../src/rules/" % (cwd, cwd))
+
+
 def main():
     get_banana_rules()
     os.system("mkdir /tmp/fruitmixer/destination")
@@ -54,7 +62,7 @@ def main():
         for filename in filenames:
             if filename.endswith(".py"):
                 abricotize(filename)
-    add_additional_rules()
+    add_additional_rule()
     os.system("rm -rf /tmp/fruitmixer/")
 
 main()

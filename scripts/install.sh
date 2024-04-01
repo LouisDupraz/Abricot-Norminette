@@ -23,42 +23,23 @@ tput sgr0
 
 # if clang-format or pip is not installed
 if ! [ -x "$(command -v clang-format)" ] || ! [ -x "$(command -v pip)" ]; then
-    if ! [ "$(uname)" == "Darwin" ]; then
-        tput sgr 0
-        echo "=> Installing clang-format..."
-        if [ -x "$(command -v dnf)" ]; then
-            sudo dnf install clang-tools-extra pip || (tput setaf 1; echo "=> Error: clang-tools-extra install went wrong"; tput sgr0; exit 1)
-        elif [ -x "$(command -v apt-get)" ]; then
-            sudo apt-get install clang-format pip || (tput setaf 1; echo "=> Error: clang-format install went wrong"; tput sgr0; exit 1)
-        elif [ -x "$(command -v zypper)" ]; then
-            sudo zypper install clang-format python3-pip || (tput setaf 1; echo "=> Error: clang-format install went wrong"; tput sgr0; exit 1)
-        elif [ -x "$(command -v pacman)" ]; then
-            sudo pacman -S clang python-pip || (tput setaf 1; echo "=> Error: clang-format install went wrong"; tput sgr0; exit 1)
-        else
-            tput setaf 1
-            echo "=> Error: Your distribution is not supported"
-            tput sgr0
-            exit 1
-        fi
-        echo "=> Installation of clang done"
-    else if [ "$(uname -s)" == "Darwin" ]; then
-        if ! [ -x "$(command -v brew)" ]; then
-            tput sgr 0
-            echo "=> Brew is not installed"
-            echo "=> Installing brew..."
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-            tput setaf 2
-            echo "=> Brew installed"
-            tput sgr0
-        fi
-        tput setaf 0
-        echo "=> Installing clang-format..."
-        brew install clang-format
-        tput setaf 2
-        echo "=> Installation of clang done"
+    tput sgr 0
+    echo "=> Installing clang-format..."
+    if [ -x "$(command -v dnf)" ]; then
+        sudo dnf install clang-tools-extra pip python3-requests docker || (tput setaf 1; echo "=> Error: clang-tools-extra install went wrong"; tput sgr0; exit 1)
+    elif [ -x "$(command -v apt-get)" ]; then
+        sudo apt-get install clang-format pip python3-requests docker || (tput setaf 1; echo "=> Error: clang-format install went wrong"; tput sgr0; exit 1)
+    elif [ -x "$(command -v zypper)" ]; then
+        sudo zypper install clang-format python3-pip python3-requests docker || (tput setaf 1; echo "=> Error: clang-format install went wrong"; tput sgr0; exit 1)
+    elif [ -x "$(command -v pacman)" ]; then
+        sudo pacman -S clang python-pip python-requests docker || (tput setaf 1; echo "=> Error: clang-format install went wrong"; tput sgr0; exit 1)
+    else
+        tput setaf 1
+        echo "=> Error: Your distribution is not supported"
         tput sgr0
+        exit 1
     fi
-fi
+    echo "=> Installation of clang done"
 else
     tput setaf 2
     echo "=> clang-format found"
@@ -67,12 +48,25 @@ BASEDIR=$(dirname "$0")
 
 tput sgr 0
 echo "=> Installing checker rules..."
+
+sudo systemctl start docker
+sudo rm -rf /tmp/docker-volume/
+mkdir -p /tmp/docker-volume/
+echo -e "#!/bin/bash\ncp /usr/local/bin/lambdananas /mounted-dir\ncp -r /usr/local/lib/vera++ /mounted-dir" > /tmp/docker-volume/copy.sh
+chmod +x /tmp/docker-volume/copy.sh
+sudo docker run --name code-style-tmp -v /tmp/docker-volume:/mounted-dir --entrypoint='/mounted-dir/copy.sh' ghcr.io/epitech/coding-style-checker:latest
+sudo docker rm code-style-tmp > /dev/null
+sudo chown -R $USER:$USER /tmp/docker-volume/
+
 python3 "$BASEDIR/fruitmixer.py"
+
+sudo rm -rf /tmp/docker-volume/
+
 tput setaf 2
 
 tput sgr 0
 echo "=> Installing python dependencies..."
-pip install -r "$BASEDIR/requirements.txt" 2>&1 > /dev/null
+pip install -r "$BASEDIR/requirements.txt" --break-system-packages 2>&1 > /dev/null
 tput setaf 2
 echo "=> Installation of requirements done"
 

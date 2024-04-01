@@ -6,13 +6,15 @@ from program.print import printc, Colors
 SEVERITIES_STRING = {
     1: "INFO",
     2: "MINOR",
-    3: "MAJOR"
+    3: "MAJOR",
+    4: "FATAL"
 }
 
 SEVERITIES_COLORS = {
     "INFO": Colors.CYAN,
     "MINOR": Colors.YELLOW,
-    "MAJOR": Colors.RED
+    "MAJOR": Colors.RED,
+    "FATAL": Colors.UNDERLINED_RED
 }
 
 
@@ -23,7 +25,8 @@ class OutputManager():
         self.summary = {
             "INFO": 0,
             "MINOR": 0,
-            "MAJOR": 0
+            "MAJOR": 0,
+            "FATAL": 0
         }
 
     def groupBy(self, type):
@@ -100,10 +103,14 @@ class OutputManager():
     def printSummary(self, plain=False):
         printc("Here's your report:", bold=(not plain))
         if plain:
+            print("[FATAL] : %d" % (self.summary["FATAL"]), end=" | ")
             print("[MAJOR] : %d" % (self.summary["MAJOR"]), end=" | ")
             print("[MINOR] : %d" % (self.summary["MINOR"]), end=" | ")
             print("[INFO] : %d" % (self.summary["INFO"]))
         else:
+            printc("[FATAL]", color=SEVERITIES_COLORS["FATAL"],
+                   bold=True, end=" : ")
+            printc("%d" % self.summary["FATAL"], end=" | ")
             printc("[MAJOR]", color=SEVERITIES_COLORS["MAJOR"],
                    bold=True, end=" : ")
             printc("%d" % self.summary["MAJOR"], end=" | ")
