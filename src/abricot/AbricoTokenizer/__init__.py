@@ -1,1 +1,2 @@
 from abricot.AbricoTokenizer.tokenizer import TokenizerObject, getTokens
+from abricot.AbricoTokenizer.custom_types import TokenSequence

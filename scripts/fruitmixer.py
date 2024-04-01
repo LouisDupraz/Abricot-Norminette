@@ -30,6 +30,8 @@ def abricotize(filename: str) -> None:
     filecontent = filecontent.replace("vera.", "abricot.")
     filecontent = re.sub(r'(INFO|MINOR|MAJOR|FATAL)\:C\-', "", filecontent)
 
+    if filename.endswith("C-L6.py"):
+        filecontent = filecontent.replace("list[abricot.Token]", "abricot.TokenSequence")
     if filename.endswith("C-G2.py"):
         filecontent = filecontent.replace("current_function.prototype.line_start - 1,", "current_function.prototype.line_start,")
     if filename.endswith("C-G3.py"):
@@ -50,7 +52,6 @@ def get_banana_rules():
 def add_additional_rule():
     cwd = os.path.dirname(__file__)
     os.system("cp %s/../src/additional/C_FN.py %s/../src/rules/" % (cwd, cwd))
-    os.system("cp %s/../src/additional/C_L6.py %s/../src/rules/" % (cwd, cwd))
     os.system("cp %s/../src/additional/__init__.py %s/../src/rules/" % (cwd, cwd))
 
 
