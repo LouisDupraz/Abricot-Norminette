@@ -31,7 +31,11 @@ if args.file:
 
 if args.update:
     from program.updater import update
-    update()
+    update(False)
+
+if args.updaterules:
+    from program.updater import update
+    update(True)
 
 if args.version:
     from __init__ import showVersion
@@ -60,7 +64,7 @@ prepareGetAllLines(parseFiles)
 TokenizerObject.setFiles(parseFiles)
 
 for rule in rules.values():
-    if rule.code == "C-FN" and args.nofunc:
+    if rule.code == "C-FN" and not args.func:
         continue
     if not rule.optional or args.all:
         thread.add(rule.checker, (), rule.name)

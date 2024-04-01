@@ -13,7 +13,7 @@
 Because we wanted to stay simple, there is one and only command to install Abricot:
 
 ```properties
-curl https://raw.githubusercontent.com/Just1truc/Abricot-Norminette/main/get_abricot.sh | sh
+curl https://raw.githubusercontent.com/LouisDupraz/Abricot-Norminette/main/get_abricot.sh | sh
 ```
 
 _Imagine having to pull a docker image to run a norminette..._ 😒
@@ -41,6 +41,11 @@ Updates are regulary made.<br />
 To keep Abricot up-to-date, please use the following command :
 ```properties
 abricot --update
+```
+
+You can also update the rules with the following command :
+```properties
+abricot --updaterules
 ```
 
 ## Checked files
@@ -149,7 +154,6 @@ Python3+ should be installed on your computer for Abricot to work.
 |--------------	|---------------	|
 | Debian based 	| ✅             	|
 | Fedora based 	| ✅             	|
-| macOS        	| ✅             	|
 | Windows      	| ⚠️ WSL advised 	|
 
 ## Credits

@@ -16,11 +16,14 @@ def getLatestVersion():
         exit()
 
 
-def update():
-    latestVersion = getLatestVersion()
-    if (latestVersion == __version__):
-        printc("Abricot is already up to date!", color=Colors.GREEN)
-        exit()
-    print("Updating Abricot...")
+def update(force: bool = False):
+    if not force:
+        latestVersion = getLatestVersion()
+        if (latestVersion == __version__):
+            printc("Abricot is already up to date!", color=Colors.GREEN)
+            exit()
+        print("Updating Abricot...")
+    else:
+        print("Reinstalling Abricot to update rules...")
     os.system("curl %s | sh" % UPDATE_FILE)
     exit()
